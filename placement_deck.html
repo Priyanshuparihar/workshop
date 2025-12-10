@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Placement PPT — Full Deck (Patched)</title>
+
+  <!-- Tailwind for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React, ReactDOM and Babel (for in-browser JSX) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    html, body, #root { height: 100%; }
+    body { margin: 0; background: linear-gradient(180deg,#eef2ff 0%, #ffffff 50%, #f3e8ff 100%); -webkit-font-smoothing:antialiased; }
+
+    /* ---------- CONFIG / TYPOGRAPHY ---------- */
+    :root{
+      --pad-lg: 36px;
+      --pad-sm: 16px;
+      --card-max-w: 1400px;
+      --content-max-w: 1100px;
+      --title-min: 20px;   /* fallback */
+      --title-mid: 32px;
+      --title-max: 44px;
+      --body-min: 14px;
+      --body-max: 18px;
+    }
+
+    .title {
+      font-size: clamp(var(--title-min), 3.4vw, var(--title-max));
+      line-height: 1.05;
+      margin: 0;
+    }
+    .subtitle {
+      font-size: clamp(var(--body-min), 2.1vw, var(--body-max));
+      line-height: 1.2;
+      margin: 0.25rem 0 0;
+    }
+
+    /* ---------- CARD SIZING & CENTERING ---------- */
+    .slide-card {
+      width: calc(100vw - 48px);
+      max-width: var(--card-max-w);
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 18px;
+      box-shadow: 0 20px 40px rgba(2,6,23,0.08);
+      background: white;
+      padding: var(--pad-lg);
+      /* Make card fill viewport but leave room for header */
+      min-height: calc(100vh - 140px);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      .slide-card {
+        width: calc(100vw - 24px);
+        padding: var(--pad-sm);
+        min-height: calc(100vh - 120px);
+        border-radius: 12px;
+      }
+    }
+
+    :fullscreen .slide-card,
+    :-webkit-full-screen .slide-card {
+      width: calc(100vw - 48px);
+      max-width: none;
+      padding: calc(var(--pad-lg) + 8px);
+      min-height: 100vh;
+      border-radius: 8px;
+    }
+
+    /* ---------- SLIDE CONTENT CENTERING ---------- */
+    .slide-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* strict vertical centering */
+      align-items: center;     /* horizontal centering */
+      text-align: center;
+      gap: 1rem;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      padding-bottom: 1rem;
+    }
+
+    .slide-inner {
+      width: 100%;
+      max-width: var(--content-max-w);
+      margin: 0 auto;
+    }
+
+    .slide-inner .text-left { text-align: left; margin: 0 auto; }
+
+    .max-height {
+      max-height: calc(100vh - 260px);
+      overflow: auto;
+    }
+
+    .fs-btn { width: 44px; height: 44px; }
+    .click-nav { user-select: none; -webkit-user-select: none; -ms-user-select: none; -webkit-tap-highlight-color: rgba(0,0,0,0); }
+
+    @media (min-width: 1200px) {
+      .slide-card .title { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <div id="root" class="min-h-screen flex items-start justify-center p-6"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    /* Inline SVG wrapper & icons (small set) */
+    const Svg = ({ children, width = 24, height = 24, className = '' }) => (
+      <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+        {children}
+      </svg>
+    );
+    const IconRocket = (props) => (<Svg {...props}><path d="M2 22s4-1 6-3 3-6 3-6 6-1 11-6c0 0-3 4-6 7s-3 6-3 6-4 1-11 2z"/><path d="M12 6l3-3"/></Svg>);
+    const IconUsers = (props) => (<Svg {...props}><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Svg>);
+    const IconFullscreen = (props) => (<Svg {...props}><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></Svg>);
+    const IconExitFullscreen = (props) => (<Svg {...props}><path d="M9 3H5a2 2 0 0 0-2 2v4"/><path d="M15 3h4a2 2 0 0 1 2 2v4"/><path d="M15 21h4a2 2 0 0 0 2-2v-4"/><path d="M9 21H5a2 2 0 0 1-2-2v-4"/></Svg>);
+
+    /* Full slide deck content (preserved) */
+    const slides = [
+      {
+        title: "Cracking Product-Based Companies",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner">
+              <div className="text-7xl mb-4">🎯</div>
+              <h1 className="title font-bold text-blue-600">Your Journey to Top Tech Companies</h1>
+              <p className="subtitle text-gray-600 mt-3">Data Engineering | Data Science | AI/ML</p>
+              <div className="mt-8 p-4 bg-blue-50 rounded-lg text-left">
+                <p className="text-lg font-semibold text-blue-800">For 6th Semester Students</p>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "The Opportunity Landscape 2025",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h2 className="title font-bold text-blue-600 mb-4">Market Demand is Exploding! 📈</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-bold text-green-700 mb-2">74% of Indian employers</h4>
+                  <p className="text-sm">hiring freshers for AI roles in 2025</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h4 className="font-bold text-purple-700 mb-2">230,000+ shortage</h4>
+                  <p className="text-sm">of data science professionals by 2026</p>
+                </div>
+                <div className="bg-orange-50 p-4 rounded-lg">
+                  <h4 className="font-bold text-orange-700 mb-2">20-30% salary increase</h4>
+                  <p className="text-sm">for entry-level positions vs 2023</p>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-bold text-blue-700 mb-2">AI market: $826B</h4>
+                  <p className="text-sm">predicted by 2030</p>
+                </div>
+              </div>
+              <div className="mt-4 p-4 bg-yellow-50 rounded-lg">
+                <p className="font-semibold text-yellow-800">💡 This is YOUR time to enter the field!</p>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Top Product-Based Companies Hiring",
+        icon: IconUsers,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Who's Hiring?</h3>
+              <div className="space-y-3">
+                <div className="bg-gradient-to-r from-red-50 to-red-100 p-3 rounded-lg">
+                  <h4 className="font-bold text-red-700">🌟 Global Tech Giants</h4>
+                  <p className="text-sm">Google, Amazon, Microsoft, Meta, IBM, NVIDIA</p>
+                </div>
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-3 rounded-lg">
+                  <h4 className="font-bold text-blue-700">🇮🇳 Indian Product Companies</h4>
+                  <p className="text-sm">Zoho, Freshworks, Jio, PhonePe, Razorpay, Swiggy, Zomato</p>
+                </div>
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-3 rounded-lg">
+                  <h4 className="font-bold text-purple-700">🚀 AI-First Startups</h4>
+                  <p className="text-sm">OpenAI, Anthropic, Databricks, Scale AI, Cohere</p>
+                </div>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-3 rounded-lg">
+                  <h4 className="font-bold text-green-700">🏦 BFSI Sector</h4>
+                  <p className="text-sm">JPMorgan Chase, Goldman Sachs, American Express, Paytm</p>
+                </div>
+                <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-3 rounded-lg">
+                  <h4 className="font-bold text-orange-700">💊 Health-Tech</h4>
+                  <p className="text-sm">Johnson & Johnson, Pfizer, Moderna, Niramai</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Career Paths Available",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner text-left max-height">
+              <h3 className="title font-bold text-blue-600 mb-4 text-center">Choose Your Path 🛤️</h3>
+              <div className="space-y-2">
+                <div className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50 rounded-lg">
+                  <h4 className="font-bold text-blue-700">Data Engineer</h4>
+                  <p className="text-sm">Build & maintain data pipelines, ETL systems</p>
+                  <p className="text-xs text-gray-600">Salary: ₹6-15 LPA (fresher)</p>
+                </div>
+                <div className="border-l-4 border-green-500 pl-4 py-2 bg-green-50 rounded-lg">
+                  <h4 className="font-bold text-green-700">Data Scientist</h4>
+                  <p className="text-sm">Analyze data, build predictive models</p>
+                  <p className="text-xs text-gray-600">Salary: ₹7-18 LPA (fresher)</p>
+                </div>
+                <div className="border-l-4 border-purple-500 pl-4 py-2 bg-purple-50 rounded-lg">
+                  <h4 className="font-bold text-purple-700">ML Engineer</h4>
+                  <p className="text-sm">Design, train & deploy ML models</p>
+                  <p className="text-xs text-gray-600">Salary: ₹10-22 LPA (fresher)</p>
+                </div>
+                <div className="border-l-4 border-orange-500 pl-4 py-2 bg-orange-50 rounded-lg">
+                  <h4 className="font-bold text-orange-700">AI Research Scientist</h4>
+                  <p className="text-sm">Develop cutting-edge AI algorithms</p>
+                  <p className="text-xs text-gray-600">Salary: ₹12-25 LPA (fresher)</p>
+                </div>
+                <div className="border-l-4 border-red-500 pl-4 py-2 bg-red-50 rounded-lg">
+                  <h4 className="font-bold text-red-700">Data Analyst</h4>
+                  <p className="text-sm">Extract insights, create dashboards</p>
+                  <p className="text-xs text-gray-600">Salary: ₹5-12 LPA (fresher)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Must-Have Technical Skills",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Core Technical Arsenal 💪</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-yellow-700 mb-2">🐍 Programming</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
+                    <li>Python (NumPy, Pandas)</li>
+                    <li>SQL (joins, CTEs, optimization)</li>
+                    <li>Java/Scala (for big data)</li>
+                  </ul>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-blue-700 mb-2">🤖 ML Frameworks</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
+                    <li>TensorFlow, PyTorch</li>
+                    <li>Scikit-learn, Keras</li>
+                    <li>Hugging Face Transformers</li>
+                  </ul>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-green-700 mb-2">📊 Big Data Tools</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
+                    <li>Hadoop, Spark, Kafka</li>
+                    <li>Airflow, Prefect (ETL)</li>
+                    <li>dbt (data transformation)</li>
+                  </ul>
+                </div>
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-purple-700 mb-2">☁️ Cloud Platforms</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
+                    <li>AWS (S3, Glue, SageMaker)</li>
+                    <li>GCP (BigQuery, Vertex AI)</li>
+                    <li>Azure ML</li>
+                  </ul>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-red-700 mb-2">🗄️ Databases</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
+                    <li>PostgreSQL, MySQL</li>
+                    <li>MongoDB, Cassandra</li>
+                    <li>Snowflake, Redshift</li>
+                  </ul>
+                </div>
+                <div className="bg-orange-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-orange-700 mb-2">🧠 Core Concepts</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
+                    <li>Data structures & algorithms</li>
+                    <li>Statistics & probability</li>
+                    <li>System design</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Data Engineering Focus",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner text-left max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Data Engineering Essentials 🔧</h3>
+              <div className="bg-blue-50 p-4 rounded-lg mb-3">
+                <h4 className="font-bold text-blue-700 mb-2">Key Areas to Master:</h4>
+                <ul className="text-sm space-y-2 list-disc list-inside">
+                  <li><strong>ETL Pipelines:</strong> Extract, Transform, Load processes</li>
+                  <li><strong>Data Modeling:</strong> Star schema, snowflake schema, dimensional modeling</li>
+                  <li><strong>Data Warehousing:</strong> Snowflake, Redshift, BigQuery</li>
+                  <li><strong>Stream Processing:</strong> Kafka, Kinesis, real-time data</li>
+                  <li><strong>Data Quality:</strong> Validation, monitoring, observability</li>
+                </ul>
+              </div>
+              <div className="bg-green-50 p-3 rounded-lg">
+                <h4 className="font-bold text-green-700">💡 Interview Focus:</h4>
+                <p className="text-sm">SQL optimization, pipeline design, scalability, cost efficiency</p>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "ML/AI Focus Areas",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">AI/ML Deep Dive 🧠</h3>
+              <div className="space-y-3 max-w-3xl mx-auto text-left">
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-purple-700 mb-2">Core ML Concepts:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>Supervised vs Unsupervised learning</li>
+                    <li>Neural networks, deep learning</li>
+                    <li>NLP, Computer Vision</li>
+                    <li>Model evaluation & metrics</li>
+                  </ul>
+                </div>
+                <div className="bg-orange-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-orange-700 mb-2">Hot Topics in 2025:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>🔥 <strong>GenAI & LLMs:</strong> GPT, Claude, Gemini</li>
+                    <li>🔥 <strong>Agentic AI:</strong> Autonomous agents</li>
+                    <li>🔥 <strong>MLOps:</strong> Model deployment & monitoring</li>
+                    <li>🔥 <strong>Responsible AI:</strong> Ethics, bias, explainability</li>
+                  </ul>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-blue-700 mb-2">Practical Skills:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>Feature engineering</li>
+                    <li>Hyperparameter tuning</li>
+                    <li>Model deployment (Docker, K8s)</li>
+                    <li>A/B testing</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Interview Process Overview",
+        icon: IconUsers,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">What to Expect 📝</h3>
+              <div className="space-y-3 max-w-3xl mx-auto text-left">
+                <div className="flex items-center space-x-3 bg-blue-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">1</div>
+                  <div>
+                    <h4 className="font-bold text-blue-700">HR Screening (30 min)</h4>
+                    <p className="text-sm">Resume discussion, motivation, fit</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 bg-green-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">2</div>
+                  <div>
+                    <h4 className="font-bold text-green-700">Technical Screen (1 hour)</h4>
+                    <p className="text-sm">1-3 coding problems, SQL queries</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 bg-purple-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">3</div>
+                  <div>
+                    <h4 className="font-bold text-purple-700">Take-Home Assignment</h4>
+                    <p className="text-sm">Real-world project (2-4 days)</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 bg-orange-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">4</div>
+                  <div>
+                    <h4 className="font-bold text-orange-700">System Design Round</h4>
+                    <p className="text-sm">Architecture, scalability, trade-offs</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 bg-red-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold text-red-600">5</div>
+                  <div>
+                    <h4 className="font-bold text-red-700">Final Round (HR + Tech)</h4>
+                    <p className="text-sm">Behavioral, culture fit, offer discussion</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Preparation Strategy - Timeline",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">6-Month Prep Plan ⏰</h3>
+              <div className="space-y-3 max-w-3xl mx-auto text-left">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-blue-700">Months 1-2: Foundations</h4>
+                  <ul className="text-sm space-y-1 mt-2 list-disc list-inside">
+                    <li>Master DSA (LeetCode 150-200 problems)</li>
+                    <li>SQL practice (HackerRank, DataLemur)</li>
+                    <li>Python fundamentals & libraries</li>
+                  </ul>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-green-700">Months 3-4: Domain Skills</h4>
+                  <ul className="text-sm space-y-1 mt-2 list-disc list-inside">
+                    <li>Learn ML algorithms & frameworks</li>
+                    <li>Build 2-3 end-to-end projects</li>
+                    <li>Practice system design basics</li>
+                  </ul>
+                </div>
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-purple-700">Months 5-6: Polish & Apply</h4>
+                  <ul className="text-sm space-y-1 mt-2 list-disc list-inside">
+                    <li>Mock interviews (Pramp, Interviewing.io)</li>
+                    <li>Refine resume & LinkedIn</li>
+                    <li>Apply to 50+ companies</li>
+                    <li>Prepare behavioral stories (STAR method)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Essential Resources",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Learning Resources 📚</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto text-left">
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-yellow-700 mb-2">Coding Practice:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>LeetCode (Easy→Medium)</li>
+                    <li>HackerRank</li>
+                    <li>CodeSignal</li>
+                  </ul>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-blue-700 mb-2">SQL Practice:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>DataLemur</li>
+                    <li>StrataScratch</li>
+                    <li>Mode Analytics</li>
+                  </ul>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-green-700 mb-2">ML/AI Learning:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>Coursera (Andrew Ng)</li>
+                    <li>Fast.ai</li>
+                    <li>Kaggle Learn</li>
+                  </ul>
+                </div>
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-purple-700 mb-2">System Design:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>ByteByteGo</li>
+                    <li>System Design Primer</li>
+                    <li>Exponent</li>
+                  </ul>
+                </div>
+                <div className="bg-orange-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-orange-700 mb-2">Interview Prep:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>Pramp (mock interviews)</li>
+                    <li>InterviewBit</li>
+                    <li>Glassdoor (reviews)</li>
+                  </ul>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-red-700 mb-2">Certifications:</h4>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>AWS ML Specialty</li>
+                    <li>Google Cloud ML</li>
+                    <li>Azure AI Engineer</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Building Your Portfolio",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Stand Out with Projects 🏆</h3>
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg text-left max-w-3xl mx-auto">
+                <h4 className="font-bold text-blue-700 mb-2">Essential Components:</h4>
+                <ul className="text-sm space-y-2 list-disc list-inside">
+                  <li><strong>3-5 Quality Projects</strong> over 20 mediocre ones</li>
+                  <li><strong>GitHub presence</strong> with clean, documented code</li>
+                  <li><strong>End-to-end solutions:</strong> data → model → deployment</li>
+                  <li><strong>Quantify impact:</strong> "improved accuracy by 15%"</li>
+                </ul>
+              </div>
+              <div className="mt-3 max-w-3xl mx-auto text-left">
+                <h4 className="font-bold text-green-700 mb-2">Project Ideas:</h4>
+                <ul className="text-sm space-y-1 list-disc list-inside">
+                  <li>Real-time data pipeline with Kafka + Spark</li>
+                  <li>ML model deployment with Docker + FastAPI</li>
+                  <li>ETL pipeline on AWS/GCP</li>
+                  <li>Recommendation system</li>
+                  <li>NLP sentiment analysis dashboard</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Common Interview Questions",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Be Ready For These 🎯</h3>
+              <div className="max-w-3xl mx-auto text-left space-y-3">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-blue-700 mb-2">Data Engineering:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>Design a scalable data pipeline</li>
+                    <li>Optimize slow SQL queries</li>
+                    <li>Handle data quality issues</li>
+                    <li>Star vs Snowflake schema</li>
+                  </ul>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-green-700 mb-2">ML/DS:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>Explain your ML project workflow</li>
+                    <li>Handle imbalanced datasets</li>
+                    <li>Overfitting vs underfitting</li>
+                    <li>Deploy ML model to production</li>
+                  </ul>
+                </div>
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-purple-700 mb-2">Behavioral:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>Tell me about a challenging project</li>
+                    <li>How do you handle tight deadlines?</li>
+                    <li>Describe a time you failed and learned</li>
+                    <li>Why this company/role?</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Resume & LinkedIn Tips",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Your Marketing Materials 📄</h3>
+              <div className="max-w-3xl mx-auto text-left space-y-3">
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-yellow-700 mb-2">Resume Do's:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>✅ One page, ATS-friendly format</li>
+                    <li>✅ Quantify achievements (numbers, %)</li>
+                    <li>✅ Action verbs: Built, Implemented, Optimized</li>
+                    <li>✅ Relevant skills at top</li>
+                    <li>✅ Tailor for each application</li>
+                  </ul>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-red-700 mb-2">Resume Don'ts:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>❌ Generic objective statements</li>
+                    <li>❌ Irrelevant coursework/hobbies</li>
+                    <li>❌ Typos or formatting errors</li>
+                    <li>❌ Lying about skills</li>
+                  </ul>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-blue-700 mb-2">LinkedIn Strategy:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>Professional photo & banner</li>
+                    <li>Engaging headline (not just "Student")</li>
+                    <li>Share projects & learnings</li>
+                    <li>Connect with recruiters & professionals</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Networking & Job Search",
+        icon: IconUsers,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Get Your Foot in the Door 🚪</h3>
+              <div className="max-w-3xl mx-auto text-left space-y-3">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-bold text-green-700 mb-2">Where to Apply:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>Company career pages (direct)</li>
+                    <li>LinkedIn Jobs</li>
+                    <li>AngelList (startups)</li>
+                    <li>Instahyre, Cutshort</li>
+                    <li>Campus placements</li>
+                  </ul>
+                </div>
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-purple-700 mb-2">Networking Tips:</h4>
+                  <ul className="text-sm list-disc list-inside">
+                    <li>🤝 Attend tech meetups & conferences</li>
+                    <li>🤝 Join online communities (Discord, Slack)</li>
+                    <li>🤝 Cold email/message alumni</li>
+                    <li>🤝 Contribute to open source</li>
+                  </ul>
+                </div>
+                <div className="bg-orange-50 p-3 rounded-lg">
+                  <h4 className="font-bold text-orange-700 mb-2">Pro Tip:</h4>
+                  <p className="text-sm">Referrals increase your chances by 5-10x. Build genuine connections!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Mistakes to Avoid",
+        icon: IconUsers,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-red-600 mb-4">Don't Fall into These Traps! ⚠️</h3>
+              <div className="space-y-2 max-w-3xl mx-auto text-left">
+                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-700">❌ Starting preparation too late (2-3 months before placements)</p>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-700">❌ Only watching tutorials without hands-on practice</p>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-700">❌ Applying to 100s of companies without tailoring resume</p>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-700">❌ Ignoring soft skills & communication</p>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-700">❌ Not practicing mock interviews</p>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-700">❌ Listing every technology without real experience</p>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm font-semibold text-red-700">❌ Getting discouraged after rejections (they're normal!)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Action Plan - Start TODAY!",
+        icon: IconRocket,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height">
+              <h3 className="title font-bold text-blue-600 mb-4">Your Next Steps 🎯</h3>
+              <div className="space-y-3 max-w-3xl mx-auto text-left">
+                <div className="bg-gradient-to-r from-green-400 to-green-500 text-white p-4 rounded-lg">
+                  <h4 className="font-bold mb-2">Week 1:</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>✓ Choose your primary career path</li>
+                    <li>✓ Set up GitHub, LinkedIn profiles</li>
+                    <li>✓ Start LeetCode (5 easy problems)</li>
+                    <li>✓ Pick one project idea</li>
+                  </ul>
+                </div>
+                <div className="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-4 rounded-lg">
+                  <h4 className="font-bold mb-2">This Month:</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>✓ Complete 30 coding problems</li>
+                    <li>✓ Learn one new tech stack deeply</li>
+                    <li>✓ Start building your first project</li>
+                    <li>✓ Join 2-3 tech communities</li>
+                  </ul>
+                </div>
+                <div className="bg-gradient-to-r from-purple-400 to-purple-500 text-white p-4 rounded-lg">
+                  <h4 className="font-bold mb-2">Continuous Habits:</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• Code daily (consistency &gt; intensity)</li>
+                    <li>• Read tech blogs & research papers</li>
+                    <li>• Share your learning journey</li>
+                    <li>• Help others (teaching = learning)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Remember...",
+        icon: IconUsers,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner max-height text-left">
+              <h3 className="title font-bold text-blue-600 mb-4 text-center">You've Got This! 💪</h3>
+              <div className="space-y-4 max-w-3xl mx-auto">
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <p className="text-lg font-semibold text-yellow-800">🌟 "The best time to start was yesterday. The next best time is NOW."</p>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="font-semibold text-blue-800">Key Takeaways:</p>
+                  <ul className="text-sm mt-2 list-disc list-inside">
+                    <li>✨ Demand for AI/ML/Data roles is at all-time high</li>
+                    <li>✨ Start preparing NOW - 6 months is ideal</li>
+                    <li>✨ Focus on depth &gt; breadth</li>
+                    <li>✨ Build real projects that solve problems</li>
+                    <li>✨ Practice, practice, practice (coding + interviews)</li>
+                    <li>✨ Network and learn from others</li>
+                    <li>✨ Rejections are part of the journey</li>
+                  </ul>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg text-center">
+                  <p className="text-green-800 font-bold text-xl">Your dream job is waiting! 🚀</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Q&A",
+        icon: IconUsers,
+        content: (
+          <div className="slide-content">
+            <div className="slide-inner">
+              <div className="text-7xl mb-4">❓</div>
+              <h2 className="title font-bold text-blue-600">Questions?</h2>
+              <p className="subtitle text-gray-600 mt-2">Let's discuss your concerns and career goals!</p>
+              <div className="mt-6 space-y-3">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="font-semibold text-blue-800">Connect with me for guidance</p>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <p className="font-semibold text-green-800">All the best for your placement journey! 🎯</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    ];
+
+    // Swipe hook for touch
+    function useSwipe(onSwipedLeft, onSwipedRight, threshold = 50) {
+      const touchStartX = useRef(null);
+      const touchStartY = useRef(null);
+
+      useEffect(() => {
+        const onTouchStart = (e) => {
+          const t = e.touches[0];
+          touchStartX.current = t.clientX;
+          touchStartY.current = t.clientY;
+        };
+        const onTouchEnd = (e) => {
+          if (touchStartX.current === null) return;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - touchStartX.current;
+          const dy = t.clientY - touchStartY.current;
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
+            if (dx < 0) onSwipedLeft();
+            else onSwipedRight();
+          }
+          touchStartX.current = null;
+          touchStartY.current = null;
+        };
+        window.addEventListener('touchstart', onTouchStart, { passive: true });
+        window.addEventListener('touchend', onTouchEnd);
+        return () => {
+          window.removeEventListener('touchstart', onTouchStart);
+          window.removeEventListener('touchend', onTouchEnd);
+        };
+      }, [onSwipedLeft, onSwipedRight, threshold]);
+    }
+
+    const SlideDeck = () => {
+      const [current, setCurrent] = useState(0);
+      const total = slides.length;
+      const wrapperRef = useRef(null);
+      const [isFs, setIsFs] = useState(false);
+
+      // Keyboard nav
+      useEffect(() => {
+        const onKey = (e) => {
+          if (e.key === 'ArrowRight') setCurrent((c) => Math.min(c + 1, total - 1));
+          if (e.key === 'ArrowLeft') setCurrent((c) => Math.max(c - 1, 0));
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+      }, [total]);
+
+      // Swipe nav
+      useSwipe(
+        () => setCurrent((c) => Math.min(c + 1, total - 1)), // swiped left -> next
+        () => setCurrent((c) => Math.max(c - 1, 0))          // swiped right -> prev
+      );
+
+      // Defensive click handler to avoid accidental nav when interacting with inner scrollable elements/buttons
+      const onSlideClick = (e) => {
+        // skip navigation if clicked on interactive elements
+        const forbiddenTags = ['A','BUTTON','INPUT','TEXTAREA','SELECT','LABEL'];
+        if (forbiddenTags.includes(e.target.tagName)) return;
+
+        // if click happened inside a scrollable container, don't navigate
+        let node = e.target;
+        while (node && node !== e.currentTarget) {
+          const style = window.getComputedStyle(node);
+          const overflowY = style.overflowY;
+          if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight) {
+            return;
+          }
+          node = node.parentNode;
+        }
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX ?? (e.touches && e.touches[0].clientX)) - rect.left;
+        if (x < rect.width / 2) setCurrent((c) => Math.max(c - 1, 0));
+        else setCurrent((c) => Math.min(c + 1, total - 1));
+      };
+
+      // Fullscreen toggle
+      const toggleFullscreen = async () => {
+        const el = document.documentElement;
+        if (!document.fullscreenElement) {
+          try { await el.requestFullscreen(); setIsFs(true); } catch (err) { console.warn('FS failed', err); }
+        } else {
+          try { await document.exitFullscreen(); setIsFs(false); } catch (err) { console.warn('Exit FS failed', err); }
+        }
+      };
+
+      useEffect(() => {
+        const handler = () => setIsFs(Boolean(document.fullscreenElement));
+        document.addEventListener('fullscreenchange', handler);
+        return () => document.removeEventListener('fullscreenchange', handler);
+      }, []);
+
+      const CurrentIcon = slides[current].icon;
+
+      return (
+        <div className="w-full">
+          {/* Header: icon + title + fullscreen + slide counter */}
+          <div className="flex items-center justify-between mb-4 max-w-[1400px] mx-auto px-2">
+            <div className="flex items-center space-x-4">
+              <div className="p-2 rounded bg-white shadow-sm"><CurrentIcon width={34} height={34} /></div>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-800">{slides[current].title}</h2>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <div className="text-sm text-gray-500">{current + 1} / {total}</div>
+              <button
+                title={isFs ? 'Exit fullscreen (Esc)' : 'Enter fullscreen'}
+                onClick={toggleFullscreen}
+                className="fs-btn flex items-center justify-center rounded border p-1 bg-white shadow"
+                aria-pressed={isFs}
+              >
+                {isFs ? <IconExitFullscreen width={18} height={18} /> : <IconFullscreen width={18} height={18} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Slide wrapper */}
+          <div
+            id="slide-wrapper"
+            ref={wrapperRef}
+            onClick={onSlideClick}
+            className="click-nav slide-card"
+            role="region"
+            aria-label="Slide area — click left/right to navigate"
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="flex-1 overflow-hidden">
+              {slides[current].content}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<SlideDeck />);
+  </script>
+</body>
+</html>
