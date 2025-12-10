@@ -56,18 +56,13 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-
-      /* CENTER the card's inner area both ways */
-      justify-content: center; /* vertical centering of child */
-      align-items: center;     /* horizontal centering of child */
     }
 
     @media (max-width: 768px) {
       .slide-card {
         width: calc(100vw - 24px);
         padding: var(--pad-sm);
-        /* reduce min-height for mobile to avoid large empty gap */
-        min-height: 70vh;
+        min-height: calc(100vh - 120px);
         border-radius: 12px;
       }
     }
@@ -76,12 +71,12 @@
     .slide-content {
       display: flex;
       flex-direction: column;
-      justify-content: center; /* keeps internal elements grouped in center */
+      justify-content: center; /* strict vertical centering */
       align-items: center;     /* horizontal centering */
       text-align: center;
       gap: 1rem;
       width: 100%;
-      /* Allow slide-content to size to its contents (don't force 100% height). */
+      height: 100%;
       box-sizing: border-box;
       padding-bottom: 1rem;
     }
@@ -108,8 +103,7 @@
 </head>
 <body class="antialiased">
 
-  <!-- ROOT: vertically center the card inside the viewport -->
-  <div id="root" class="min-h-screen flex items-center justify-center p-6"></div>
+  <div id="root" class="min-h-screen flex items-start justify-center p-6"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
@@ -134,15 +128,12 @@
               <div className="text-7xl mb-4">🎯</div>
               <h1 className="title font-bold text-blue-600">Your Journey to Top Tech Companies</h1>
               <p className="subtitle text-gray-600 mt-3">Data Engineering | Data Science | AI/ML</p>
-              <div className="mt-8 p-4 bg-blue-50 rounded-lg text-left">
-                <p className="text-lg font-semibold text-blue-800">For 6th Semester Students</p>
-              </div>
             </div>
           </div>
         )
       },
       {
-        title: "The Opportunity Landscape 2025",
+        title: "The Opportunity Landscape",
         icon: IconRocket,
         content: (
           <div className="slide-content">
@@ -230,7 +221,7 @@
                   <p className="text-xs text-gray-600">Salary: ₹10-22 LPA (fresher)</p>
                 </div>
                 <div className="border-l-4 border-orange-500 pl-4 py-2 bg-orange-50 rounded-lg">
-                  <h4 className="font-bold text-orange-700">AI Research Scientist</h4>
+                  <h4 className="font-bold text-orange-700">AI Engineer</h4>
                   <p className="text-sm">Develop cutting-edge AI algorithms</p>
                   <p className="text-xs text-gray-600">Salary: ₹12-25 LPA (fresher)</p>
                 </div>
@@ -245,179 +236,420 @@
         )
       },
       {
-        title: "Must-Have Technical Skills",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Core Technical Arsenal 💪</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="bg-yellow-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-yellow-700 mb-2">🐍 Programming</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
-                    <li>Python (NumPy, Pandas)</li>
-                    <li>SQL (joins, CTEs, optimization)</li>
-                    <li>Java/Scala (for big data)</li>
-                  </ul>
-                </div>
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-blue-700 mb-2">🤖 ML Frameworks</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
-                    <li>TensorFlow, PyTorch</li>
-                    <li>Scikit-learn, Keras</li>
-                    <li>Hugging Face Transformers</li>
-                  </ul>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-green-700 mb-2">📊 Big Data Tools</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
-                    <li>Hadoop, Spark, Kafka</li>
-                    <li>Airflow, Prefect (ETL)</li>
-                    <li>dbt (data transformation)</li>
-                  </ul>
-                </div>
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-purple-700 mb-2">☁️ Cloud Platforms</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
-                    <li>AWS (S3, Glue, SageMaker)</li>
-                    <li>GCP (BigQuery, Vertex AI)</li>
-                    <li>Azure ML</li>
-                  </ul>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-red-700 mb-2">🗄️ Databases</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
-                    <li>PostgreSQL, MySQL</li>
-                    <li>MongoDB, Cassandra</li>
-                    <li>Snowflake, Redshift</li>
-                  </ul>
-                </div>
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-orange-700 mb-2">🧠 Core Concepts</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside text-left">
-                    <li>Data structures & algorithms</li>
-                    <li>Statistics & probability</li>
-                    <li>System design</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+  title: "Must-Have Technical Skills",
+  icon: IconRocket,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height">
+        
+        <h3 className="title font-bold text-blue-600 mb-4">
+          Core Technical Arsenal 💪
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+          {/* Programming */}
+          <div className="bg-yellow-50 p-3 rounded-lg">
+            <h4 className="font-bold text-yellow-700 mb-2">🐍 Programming & Core Skills</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>Python (NumPy, Pandas, FastAPI)</li>
+              <li>SQL (joins, windows, CTEs, optimization)</li>
+              <li>Bash/Shell scripting</li>
+              <li>Data Structures, Algorithms & System Design basics</li>
+            </ul>
           </div>
-        )
-      },
+
+          {/* AI/ML Frameworks */}
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <h4 className="font-bold text-blue-700 mb-2">🤖 AI / ML & Modern LLM Stack</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>PyTorch, TensorFlow, scikit-learn</li>
+              <li>Hugging Face Transformers (LLMs)</li>
+              <li>LangChain / LlamaIndex (RAG pipelines)</li>
+              <li>OpenAI / Claude / Gemini APIs</li>
+            </ul>
+          </div>
+
+          {/* Vector DBs */}
+          <div className="bg-teal-50 p-3 rounded-lg">
+            <h4 className="font-bold text-teal-800 mb-2">🧭 Vector Databases & Retrieval</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>FAISS (local search)</li>
+              <li>ChromaDB (easy RAG prototyping)</li>
+              <li>Pinecone, Weaviate, Milvus (production vector DBs)</li>
+              <li>Embedding pipelines (create → store → retrieve → rank)</li>
+            </ul>
+          </div>
+
+          {/* Big Data + Databricks */}
+          <div className="bg-green-50 p-3 rounded-lg">
+            <h4 className="font-bold text-green-700 mb-2">📊 Big-Data, ETL & Databricks</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>Apache Spark (core + performance basics)</li>
+              <li>Databricks Lakehouse Platform</li>
+              <li>Delta Lake (ACID tables)</li>
+              <li>Databricks Notebooks, Workflows, DLT (Delta Live Tables)</li>
+              <li>Kafka (real-time streaming)</li>
+              <li>Airflow / Prefect (orchestration)</li>
+              <li>dbt (analytics engineering)</li>
+            </ul>
+          </div>
+
+          {/* Cloud */}
+          <div className="bg-purple-50 p-3 rounded-lg">
+            <h4 className="font-bold text-purple-700 mb-2">☁️ Cloud Platforms</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>AWS (S3, Glue, Lambda, SageMaker)</li>
+              <li>GCP (BigQuery, Vertex AI)</li>
+              <li>Azure ML</li>
+              <li>Unity Catalog (data governance in Lakehouse)</li>
+            </ul>
+          </div>
+
+          {/* MLOps + MLflow */}
+          <div className="bg-rose-50 p-3 rounded-lg">
+            <h4 className="font-bold text-rose-700 mb-2">⚙️ MLOps, Deployment & MLflow</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>MLflow (tracking, metrics, artifacts, Model Registry)</li>
+              <li>Model serving with FastAPI, BentoML, TorchServe</li>
+              <li>Docker (containers) & intro to Kubernetes</li>
+              <li>CI/CD (GitHub Actions, GitLab CI)</li>
+              <li>Monitoring: Prometheus, Grafana, Evidently</li>
+              <li>Infrastructure-as-Code (Terraform basics)</li>
+            </ul>
+          </div>
+
+          {/* Databases */}
+          <div className="bg-red-50 p-3 rounded-lg">
+            <h4 className="font-bold text-red-700 mb-2">🗄️ Databases</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>PostgreSQL, MySQL</li>
+              <li>MongoDB, Redis</li>
+              <li>Snowflake, BigQuery, Redshift</li>
+            </ul>
+          </div>
+
+          {/* Visualization */}
+          <div className="bg-orange-50 p-3 rounded-lg">
+            <h4 className="font-bold text-orange-700 mb-2">📈 Visualization & BI</h4>
+            <ul className="text-sm space-y-1 list-disc list-inside text-left">
+              <li>Streamlit / Dash</li>
+              <li>Tableau / Power BI</li>
+              <li>Plotly / Matplotlib</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  )
+},
       {
-        title: "Data Engineering Focus",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner text-left max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Data Engineering Essentials 🔧</h3>
-              <div className="bg-blue-50 p-4 rounded-lg mb-3">
-                <h4 className="font-bold text-blue-700 mb-2">Key Areas to Master:</h4>
-                <ul className="text-sm space-y-2 list-disc list-inside">
-                  <li><strong>ETL Pipelines:</strong> Extract, Transform, Load processes</li>
-                  <li><strong>Data Modeling:</strong> Star schema, snowflake schema, dimensional modeling</li>
-                  <li><strong>Data Warehousing:</strong> Snowflake, Redshift, BigQuery</li>
-                  <li><strong>Stream Processing:</strong> Kafka, Kinesis, real-time data</li>
-                  <li><strong>Data Quality:</strong> Validation, monitoring, observability</li>
-                </ul>
-              </div>
-              <div className="bg-green-50 p-3 rounded-lg">
-                <h4 className="font-bold text-green-700">💡 Interview Focus:</h4>
-                <p className="text-sm">SQL optimization, pipeline design, scalability, cost efficiency</p>
-              </div>
-            </div>
+  title: "Data Engineering Focus",
+  icon: IconRocket,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner text-left max-height">
+
+        <h3 className="title font-bold text-blue-600 mb-4">Data Engineering Essentials 🔧</h3>
+
+        <div className="space-y-3">
+
+          {/* Lakehouse & Storage */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-bold text-blue-700 mb-2">🏛️ Lakehouse & Storage</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Delta Lake (ACID tables, time travel)</li>
+              <li>Databricks Lakehouse Platform</li>
+              <li>Unity Catalog (governance & lineage)</li>
+            </ul>
           </div>
-        )
-      },
-      {
-        title: "ML/AI Focus Areas",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">AI/ML Deep Dive 🧠</h3>
-              <div className="space-y-3 max-w-3xl mx-auto text-left">
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-purple-700 mb-2">Core ML Concepts:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>Supervised vs Unsupervised learning</li>
-                    <li>Neural networks, deep learning</li>
-                    <li>NLP, Computer Vision</li>
-                    <li>Model evaluation & metrics</li>
-                  </ul>
-                </div>
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-orange-700 mb-2">Hot Topics in 2025:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>🔥 <strong>GenAI & LLMs:</strong> GPT, Claude, Gemini</li>
-                    <li>🔥 <strong>Agentic AI:</strong> Autonomous agents</li>
-                    <li>🔥 <strong>MLOps:</strong> Model deployment & monitoring</li>
-                    <li>🔥 <strong>Responsible AI:</strong> Ethics, bias, explainability</li>
-                  </ul>
-                </div>
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-blue-700 mb-2">Practical Skills:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>Feature engineering</li>
-                    <li>Hyperparameter tuning</li>
-                    <li>Model deployment (Docker, K8s)</li>
-                    <li>A/B testing</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+
+          {/* ETL / ELT & Pipelines */}
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-bold text-green-700 mb-2">🔄 ETL / ELT Pipelines</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Spark ETL (DataFrames, SQL)</li>
+              <li>dbt (analytics ELT)</li>
+              <li>Delta Live Tables (DLT) for pipeline automation</li>
+            </ul>
           </div>
-        )
-      },
-      {
-        title: "Interview Process Overview",
-        icon: IconUsers,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">What to Expect 📝</h3>
-              <div className="space-y-3 max-w-3xl mx-auto text-left">
-                <div className="flex items-center space-x-3 bg-blue-50 p-3 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">1</div>
-                  <div>
-                    <h4 className="font-bold text-blue-700">HR Screening (30 min)</h4>
-                    <p className="text-sm">Resume discussion, motivation, fit</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 bg-green-50 p-3 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">2</div>
-                  <div>
-                    <h4 className="font-bold text-green-700">Technical Screen (1 hour)</h4>
-                    <p className="text-sm">1-3 coding problems, SQL queries</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 bg-purple-50 p-3 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">3</div>
-                  <div>
-                    <h4 className="font-bold text-purple-700">Take-Home Assignment</h4>
-                    <p className="text-sm">Real-world project (2-4 days)</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 bg-orange-50 p-3 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">4</div>
-                  <div>
-                    <h4 className="font-bold text-orange-700">System Design Round</h4>
-                    <p className="text-sm">Architecture, scalability, trade-offs</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 bg-red-50 p-3 rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">5</div>
-                  <div>
-                    <h4 className="font-bold text-red-700">Final Round (HR + Tech)</h4>
-                    <p className="text-sm">Behavioral, culture fit, offer discussion</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+
+          {/* Streaming */}
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h4 className="font-bold text-purple-700 mb-2">⚡ Streaming & Real-Time</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Spark Structured Streaming</li>
+              <li>Kafka (producers, consumers, partitions)</li>
+            </ul>
           </div>
-        )
-      },
+
+          {/* Orchestration */}
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h4 className="font-bold text-yellow-700 mb-2">🧩 Orchestration</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Airflow / ADF (DAG scheduling)</li>
+              <li>Databricks Workflows</li>
+            </ul>
+          </div>
+
+          {/* Data Quality */}
+          <div className="bg-red-50 p-4 rounded-lg">
+            <h4 className="font-bold text-red-700 mb-2">✔️ Data Quality & Governance</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Great Expectations (validation)</li>
+              <li>Schema enforcement (Delta)</li>
+            </ul>
+          </div>
+
+          {/* Interview Focus */}
+          <div className="bg-green-100 p-4 rounded-lg mt-3">
+            <h4 className="font-bold text-green-800">💡 Interview Focus</h4>
+            <p className="text-sm mt-1">
+              SQL optimization • Pipeline design • Spark basics • Streaming concepts • Data modeling
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  )
+},
+
+{
+  title: "Data Science Focus",
+  icon: IconUsers,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner text-left max-height">
+        <h3 className="title font-bold text-blue-600 mb-4">Data Science Essentials 🧠</h3>
+
+        <div className="space-y-3">
+
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h4 className="font-bold text-yellow-700 mb-2">📊 Statistics & Fundamentals</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Hypothesis testing, probability, distributions</li>
+              <li>Confidence intervals, significance vs effect</li>
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-bold text-blue-700 mb-2">🧠 Core ML Algorithms</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Regression, trees, ensemble methods (XGBoost)</li>
+              <li>Clustering + basic forecasting</li>
+            </ul>
+          </div>
+
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-bold text-green-700 mb-2">🛠️ Practical DS Workflow</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>EDA & Feature engineering</li>
+              <li>Evaluation metrics (AUC, RMSE, F1)</li>
+            </ul>
+          </div>
+
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h4 className="font-bold text-purple-700 mb-2">⚖️ Experimentation</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>A/B testing, experiment design, KPI impact</li>
+            </ul>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-bold text-gray-800 mb-2">💡 Interview Focus</h4>
+            <p className="text-sm">Statistics • SQL • Case studies • EDA → model → metric interpretation</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+},
+{
+  title: "ML Engineering Focus",
+  icon: IconRocket,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner text-left max-height">
+        <h3 className="title font-bold text-blue-600 mb-4">ML Engineering Essentials ⚙️</h3>
+
+        <div className="space-y-3">
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-bold text-blue-700 mb-2">🧠 Model Training</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>PyTorch / TensorFlow basics</li>
+              <li>Experiment tracking with MLflow</li>
+            </ul>
+          </div>
+
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-bold text-green-700 mb-2">🚀 Deployment</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Docker + FastAPI serving</li>
+              <li>CI/CD basics (GitHub Actions)</li>
+            </ul>
+          </div>
+
+          <div className="bg-teal-50 p-4 rounded-lg">
+            <h4 className="font-bold text-teal-800 mb-2">🔁 MLOps</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Model registry, reproducibility, monitoring</li>
+              <li>Config-driven pipelines</li>
+            </ul>
+          </div>
+
+          <div className="bg-orange-50 p-4 rounded-lg">
+            <h4 className="font-bold text-orange-700 mb-2">⚡ Performance</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Batch vs real-time inference</li>
+              <li>Latency vs throughput basics</li>
+            </ul>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-bold text-gray-800 mb-2">💡 Interview Focus</h4>
+            <p className="text-sm">Deployment demo • MLflow • Containerization • Basic system design</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+},
+{
+  title: "AI / GenAI Focus",
+  icon: IconUsers,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner text-left max-height">
+        <h3 className="title font-bold text-blue-600 mb-4">AI / GenAI Essentials 🤖🔥</h3>
+
+        <div className="space-y-3">
+
+          <div className="bg-teal-50 p-4 rounded-lg">
+            <h4 className="font-bold text-teal-800 mb-2">📚 RAG & Embeddings</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Embeddings → Vector DB (Pinecone / Chroma / Weaviate)</li>
+              <li>RAG pipeline: Retrieve → Prompt → Generate</li>
+            </ul>
+          </div>
+
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h4 className="font-bold text-purple-700 mb-2">🤖 LLM Integration</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>LangChain & LlamaIndex pipelines</li>
+              <li>OpenAI / Claude / Gemini APIs</li>
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-bold text-blue-700 mb-2">🧩 Agentic AI & Workflows</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>LangGraph — agent workflow orchestration</li>
+              <li>MCP (Model Context Protocol)</li>
+              <li>Multi-agent systems (tool use, planning)</li>
+            </ul>
+          </div>
+
+          <div className="bg-rose-50 p-4 rounded-lg">
+            <h4 className="font-bold text-rose-700 mb-2">⚙️ Fine-Tuning & Optimization</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>LoRA / QLoRA basics</li>
+              <li>Prompt optimization workflows</li>
+            </ul>
+          </div>
+
+          <div className="bg-orange-50 p-4 rounded-lg">
+            <h4 className="font-bold text-orange-700 mb-2">📈 Observability & Evaluation</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>LangFuse (LLM monitoring + analytics)</li>
+              <li>LangSmith (tracing + dataset management)</li>
+            </ul>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-bold text-gray-800 mb-2">💡 Interview Focus</h4>
+            <p className="text-sm">RAG basics • Embeddings • Vector DBs • Agent workflows • LangChain/LangGraph usage</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  )
+},
+
+{
+  title: "Interview Process Overview",
+  icon: IconUsers,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height text-left">
+
+        <h3 className="title font-bold text-blue-600 mb-4">What to Expect📝</h3>
+
+        <div className="space-y-3">
+
+          {/* Round 1 */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-bold text-blue-700 mb-2">1️⃣ Online Assessment</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>MCQs: CS fundamentals, aptitude</li>
+              <li>DSA coding (arrays, strings, DP for top companies)</li>
+              <li>SQL queries (joins, aggregations)</li>
+              <li>Basic ML/statistics (for DS/ML roles)</li>
+            </ul>
+          </div>
+
+          {/* Round 2 */}
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-bold text-green-700 mb-2">2️⃣ Technical Interview — Round 1</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>DSA + SQL problems</li>
+              <li>Explain your projects clearly</li>
+              <li>ML basics / statistics (for DS/ML)</li>
+            </ul>
+          </div>
+
+          {/* Round 3 */}
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h4 className="font-bold text-purple-700 mb-2">3️⃣ Technical Interview — Round 2 (Role-Specific)</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li><strong>Data Engineer:</strong> ETL, SQL optimization, data modeling, pipelines</li>
+              <li><strong>Data Scientist:</strong> ML algorithms, case studies, metrics</li>
+              <li><strong>ML Engineer:</strong> model deployment basics, pipelines, MLflow</li>
+              <li><strong>AI / GenAI Engineer:</strong> RAG basics, embeddings, vector DBs, LLM API usage, simple agent workflow concepts</li>
+              <li>System design “lite” for freshers</li>
+            </ul>
+          </div>
+
+          {/* Round 4 */}
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h4 className="font-bold text-yellow-700 mb-2">4️⃣ Behavioral + HR Round</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Communication & culture fit</li>
+              <li>Teamwork & problem-solving questions</li>
+              <li>Salary expectations</li>
+            </ul>
+          </div>
+
+          {/* Extra */}
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-bold text-gray-800 mb-2">✨ Additional (Some Companies)</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Take-home assignment</li>
+              <li>Managerial round</li>
+              <li>Bar raiser (Amazon style)</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+},
+
       {
         title: "Preparation Strategy - Timeline",
         icon: IconRocket,
@@ -437,7 +669,7 @@
                 <div className="bg-green-50 p-3 rounded-lg">
                   <h4 className="font-bold text-green-700">Months 3-4: Domain Skills</h4>
                   <ul className="text-sm space-y-1 mt-2 list-disc list-inside">
-                    <li>Learn ML algorithms & frameworks</li>
+                    <li>Learn Domain skills & frameworks</li>
                     <li>Build 2-3 end-to-end projects</li>
                     <li>Practice system design basics</li>
                   </ul>
@@ -456,340 +688,367 @@
           </div>
         )
       },
-      {
-        title: "Essential Resources",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Learning Resources 📚</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto text-left">
-                <div className="bg-yellow-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-yellow-700 mb-2">Coding Practice:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>LeetCode (Easy→Medium)</li>
-                    <li>HackerRank</li>
-                    <li>CodeSignal</li>
-                  </ul>
-                </div>
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-blue-700 mb-2">SQL Practice:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>DataLemur</li>
-                    <li>StrataScratch</li>
-                    <li>Mode Analytics</li>
-                  </ul>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-green-700 mb-2">ML/AI Learning:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>Coursera (Andrew Ng)</li>
-                    <li>Fast.ai</li>
-                    <li>Kaggle Learn</li>
-                  </ul>
-                </div>
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-purple-700 mb-2">System Design:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>ByteByteGo</li>
-                    <li>System Design Primer</li>
-                    <li>Exponent</li>
-                  </ul>
-                </div>
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-orange-700 mb-2">Interview Prep:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>Pramp (mock interviews)</li>
-                    <li>InterviewBit</li>
-                    <li>Glassdoor (reviews)</li>
-                  </ul>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-red-700 mb-2">Certifications:</h4>
-                  <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>AWS ML Specialty</li>
-                    <li>Google Cloud ML</li>
-                    <li>Azure AI Engineer</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+      
+     {
+  title: "Building Your Portfolio",
+  icon: IconRocket,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height">
+
+        <h3 className="title font-bold text-blue-600 mb-4">Stand Out with Projects 🏆</h3>
+
+        {/* Essential Components */}
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg text-left max-w-3xl mx-auto">
+          <h4 className="font-bold text-blue-700 mb-2">Essential Components:</h4>
+          <ul className="text-sm space-y-2 list-disc list-inside">
+            <li><strong>3–5 strong, end-to-end projects</strong> (not 20 incomplete ones)</li>
+            <li><strong>Clear documentation:</strong> README, diagrams, datasets, results</li>
+            <li><strong>Code quality:</strong> modular, clean, with comments</li>
+            <li><strong>Impact-focused:</strong> accuracy gains, latency reduction, insights</li>
+            <li><strong>Deploy at least 1 project</strong> (Streamlit / FastAPI / HuggingFace Space)</li>
+            <li><strong>Version control:</strong> GitHub commits + branches</li>
+          </ul>
+        </div>
+
+        {/* Project Ideas */}
+        <div className="mt-3 max-w-3xl mx-auto text-left">
+
+          <h4 className="font-bold text-green-700 mb-2">Project Ideas (Role-Specific):</h4>
+
+          <ul className="text-sm space-y-2 list-disc list-inside">
+
+            {/* Data Engineering */}
+            <li>
+              <strong>Data Engineering:</strong>  
+              End-to-end data pipeline (Kafka → Spark → dbt → Warehouse) with dashboard.
+            </li>
+
+            {/* Data Science */}
+            <li>
+              <strong>Data Science:</strong>  
+              EDA + ML model (classification/regression) with feature engineering + metrics dashboard.
+            </li>
+
+            {/* Machine Learning Engineering */}
+            <li>
+              <strong>ML Engineering:</strong>  
+              Train a model, track experiments with MLflow, and deploy using FastAPI + Docker.
+            </li>
+
+            {/* AI / GenAI */}
+            <li>
+              <strong>AI / GenAI:</strong>  
+              RAG chatbot using embeddings + a vector DB (Pinecone/Chroma) + LangChain/LangGraph.
+            </li>
+
+            {/* Additional – Light & Useful */}
+            <li>
+              <strong>Bonus (any role):</strong>  
+              Build a Streamlit dashboard for insights or model results.
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+    </div>
+  )
+},
+{
+  title: "Resume & LinkedIn Tips",
+  icon: IconRocket,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height">
+
+        <h3 className="title font-bold text-blue-600 mb-4">Your Marketing Materials 📄</h3>
+
+        <div className="max-w-3xl mx-auto text-left space-y-3">
+
+          {/* Resume Do's */}
+          <div className="bg-yellow-50 p-3 rounded-lg">
+            <h4 className="font-bold text-yellow-700 mb-2">Resume Do's:</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>✅ One page, ATS-friendly format</li>
+              <li>✅ Quantify achievements (numbers, %, improvements)</li>
+              <li>✅ Use action verbs: Built, Implemented, Optimized</li>
+              <li>✅ Add GitHub/Project links inside bullet points</li>
+              <li>✅ Group skills clearly (Programming, Tools, Cloud, AI/ML)</li>
+              <li>✅ Tailor for each job application</li>
+            </ul>
           </div>
-        )
-      },
-      {
-        title: "Building Your Portfolio",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Stand Out with Projects 🏆</h3>
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg text-left max-w-3xl mx-auto">
-                <h4 className="font-bold text-blue-700 mb-2">Essential Components:</h4>
-                <ul className="text-sm space-y-2 list-disc list-inside">
-                  <li><strong>3-5 Quality Projects</strong> over 20 mediocre ones</li>
-                  <li><strong>GitHub presence</strong> with clean, documented code</li>
-                  <li><strong>End-to-end solutions:</strong> data → model → deployment</li>
-                  <li><strong>Quantify impact:</strong> "improved accuracy by 15%"</li>
-                </ul>
-              </div>
-              <div className="mt-3 max-w-3xl mx-auto text-left">
-                <h4 className="font-bold text-green-700 mb-2">Project Ideas:</h4>
-                <ul className="text-sm space-y-1 list-disc list-inside">
-                  <li>Real-time data pipeline with Kafka + Spark</li>
-                  <li>ML model deployment with Docker + FastAPI</li>
-                  <li>ETL pipeline on AWS/GCP</li>
-                  <li>Recommendation system</li>
-                  <li>NLP sentiment analysis dashboard</li>
-                </ul>
-              </div>
-            </div>
+
+          {/* Resume Don'ts */}
+          <div className="bg-red-50 p-3 rounded-lg">
+            <h4 className="font-bold text-red-700 mb-2">Resume Don'ts:</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>❌ Generic objective statements</li>
+              <li>❌ Irrelevant coursework/hobbies</li>
+              <li>❌ Typos or inconsistent formatting</li>
+              <li>❌ Listing tech you haven't actually used</li>
+            </ul>
           </div>
-        )
-      },
-      {
-        title: "Common Interview Questions",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Be Ready For These 🎯</h3>
-              <div className="max-w-3xl mx-auto text-left space-y-3">
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-blue-700 mb-2">Data Engineering:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>Design a scalable data pipeline</li>
-                    <li>Optimize slow SQL queries</li>
-                    <li>Handle data quality issues</li>
-                    <li>Star vs Snowflake schema</li>
-                  </ul>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-green-700 mb-2">ML/DS:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>Explain your ML project workflow</li>
-                    <li>Handle imbalanced datasets</li>
-                    <li>Overfitting vs underfitting</li>
-                    <li>Deploy ML model to production</li>
-                  </ul>
-                </div>
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-purple-700 mb-2">Behavioral:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>Tell me about a challenging project</li>
-                    <li>How do you handle tight deadlines?</li>
-                    <li>Describe a time you failed and learned</li>
-                    <li>Why this company/role?</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+
+          {/* LinkedIn */}
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <h4 className="font-bold text-blue-700 mb-2">LinkedIn Strategy:</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Professional photo & clean banner</li>
+              <li>Clear headline (DE / DS / ML / AI Aspirant)</li>
+              <li>Use the “Featured” section for projects & resume</li>
+              <li>Post learnings, projects, certificates</li>
+              <li>Engage with recruiters, alumni, and industry groups</li>
+            </ul>
           </div>
-        )
-      },
-      {
-        title: "Resume & LinkedIn Tips",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Your Marketing Materials 📄</h3>
-              <div className="max-w-3xl mx-auto text-left space-y-3">
-                <div className="bg-yellow-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-yellow-700 mb-2">Resume Do's:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>✅ One page, ATS-friendly format</li>
-                    <li>✅ Quantify achievements (numbers, %)</li>
-                    <li>✅ Action verbs: Built, Implemented, Optimized</li>
-                    <li>✅ Relevant skills at top</li>
-                    <li>✅ Tailor for each application</li>
-                  </ul>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-red-700 mb-2">Resume Don'ts:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>❌ Generic objective statements</li>
-                    <li>❌ Irrelevant coursework/hobbies</li>
-                    <li>❌ Typos or formatting errors</li>
-                    <li>❌ Lying about skills</li>
-                  </ul>
-                </div>
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-blue-700 mb-2">LinkedIn Strategy:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>Professional photo & banner</li>
-                    <li>Engaging headline (not just "Student")</li>
-                    <li>Share projects & learnings</li>
-                    <li>Connect with recruiters & professionals</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+},
+{
+  title: "Networking & Job Search",
+  icon: IconUsers,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height">
+
+        <h3 className="title font-bold text-blue-600 mb-4">Get Your Foot in the Door 🚪</h3>
+
+        <div className="max-w-3xl mx-auto text-left space-y-3">
+
+          {/* Where to Apply */}
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h4 className="font-bold text-green-700 mb-2">Where to Apply:</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>Company career pages (direct applications)</li>
+              <li>LinkedIn Jobs + Easy Apply</li>
+              <li>WellFound (formerly AngelList)</li>
+              <li>Instahyre, Cutshort, Hirect</li>
+              <li>NaukriTech (tech-only job portal)</li>
+              <li>Campus/college placements</li>
+            </ul>
           </div>
-        )
-      },
-      {
-        title: "Networking & Job Search",
-        icon: IconUsers,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Get Your Foot in the Door 🚪</h3>
-              <div className="max-w-3xl mx-auto text-left space-y-3">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-green-700 mb-2">Where to Apply:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>Company career pages (direct)</li>
-                    <li>LinkedIn Jobs</li>
-                    <li>AngelList (startups)</li>
-                    <li>Instahyre, Cutshort</li>
-                    <li>Campus placements</li>
-                  </ul>
-                </div>
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-purple-700 mb-2">Networking Tips:</h4>
-                  <ul className="text-sm list-disc list-inside">
-                    <li>🤝 Attend tech meetups & conferences</li>
-                    <li>🤝 Join online communities (Discord, Slack)</li>
-                    <li>🤝 Cold email/message alumni</li>
-                    <li>🤝 Contribute to open source</li>
-                  </ul>
-                </div>
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <h4 className="font-bold text-orange-700 mb-2">Pro Tip:</h4>
-                  <p className="text-sm">Referrals increase your chances by 5-10x. Build genuine connections!</p>
-                </div>
-              </div>
-            </div>
+
+          {/* Networking Tips */}
+          <div className="bg-purple-50 p-3 rounded-lg">
+            <h4 className="font-bold text-purple-700 mb-2">Networking Tips:</h4>
+            <ul className="text-sm list-disc list-inside space-y-1">
+              <li>🤝 Attend tech meetups, workshops & conferences</li>
+              <li>🤝 Join active communities (Discord, Slack, LinkedIn Groups)</li>
+              <li>🤝 Cold message alumni & professionals with personalized notes</li>
+              <li>🤝 Contribute to open source (HuggingFace, LangChain, TensorFlow)</li>
+              <li>💬 Engage on LinkedIn: comment on posts daily (10× visibility)</li>
+            </ul>
           </div>
-        )
-      },
-      {
-        title: "Mistakes to Avoid",
-        icon: IconUsers,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-red-600 mb-4">Don't Fall into These Traps! ⚠️</h3>
-              <div className="space-y-2 max-w-3xl mx-auto text-left">
-                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
-                  <p className="text-sm font-semibold text-red-700">❌ Starting preparation too late (2-3 months before placements)</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
-                  <p className="text-sm font-semibold text-red-700">❌ Only watching tutorials without hands-on practice</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
-                  <p className="text-sm font-semibold text-red-700">❌ Applying to 100s of companies without tailoring resume</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
-                  <p className="text-sm font-semibold text-red-700">❌ Ignoring soft skills & communication</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
-                  <p className="text-sm font-semibold text-red-700">❌ Not practicing mock interviews</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
-                  <p className="text-sm font-semibold text-red-700">❌ Listing every technology without real experience</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
-                  <p className="text-sm font-semibold text-red-700">❌ Getting discouraged after rejections (they're normal!)</p>
-                </div>
-              </div>
-            </div>
+
+          {/* Pro Tip */}
+          <div className="bg-orange-50 p-3 rounded-lg">
+            <h4 className="font-bold text-orange-700 mb-2">Pro Tip:</h4>
+            <p className="text-sm">
+              Referrals increase your chances by <strong>5–10×</strong>.  
+              Build genuine connections and showcase your projects in the LinkedIn Featured section.
+            </p>
           </div>
-        )
-      },
-      {
-        title: "Action Plan - Start TODAY!",
-        icon: IconRocket,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height">
-              <h3 className="title font-bold text-blue-600 mb-4">Your Next Steps 🎯</h3>
-              <div className="space-y-3 max-w-3xl mx-auto text-left">
-                <div className="bg-gradient-to-r from-green-400 to-green-500 text-white p-4 rounded-lg">
-                  <h4 className="font-bold mb-2">Week 1:</h4>
-                  <ul className="text-sm space-y-1">
-                    <li>✓ Choose your primary career path</li>
-                    <li>✓ Set up GitHub, LinkedIn profiles</li>
-                    <li>✓ Start LeetCode (5 easy problems)</li>
-                    <li>✓ Pick one project idea</li>
-                  </ul>
-                </div>
-                <div className="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-4 rounded-lg">
-                  <h4 className="font-bold mb-2">This Month:</h4>
-                  <ul className="text-sm space-y-1">
-                    <li>✓ Complete 30 coding problems</li>
-                    <li>✓ Learn one new tech stack deeply</li>
-                    <li>✓ Start building your first project</li>
-                    <li>✓ Join 2-3 tech communities</li>
-                  </ul>
-                </div>
-                <div className="bg-gradient-to-r from-purple-400 to-purple-500 text-white p-4 rounded-lg">
-                  <h4 className="font-bold mb-2">Continuous Habits:</h4>
-                  <ul className="text-sm space-y-1">
-                    <li>• Code daily (consistency &gt; intensity)</li>
-                    <li>• Read tech blogs & research papers</li>
-                    <li>• Share your learning journey</li>
-                    <li>• Help others (teaching = learning)</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+},
+{
+  title: "Mistakes to Avoid",
+  icon: IconUsers,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height">
+
+        <h3 className="title font-bold text-red-600 mb-4">Don't Fall into These Traps! ⚠️</h3>
+
+        <div className="space-y-2 max-w-3xl mx-auto text-left">
+
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Starting preparation too late (2–3 months before placements)</p>
           </div>
-        )
-      },
-      {
-        title: "Remember...",
-        icon: IconUsers,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner max-height text-left">
-              <h3 className="title font-bold text-blue-600 mb-4 text-center">You've Got This! 💪</h3>
-              <div className="space-y-4 max-w-3xl mx-auto">
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <p className="text-lg font-semibold text-yellow-800">🌟 "The best time to start was yesterday. The next best time is NOW."</p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="font-semibold text-blue-800">Key Takeaways:</p>
-                  <ul className="text-sm mt-2 list-disc list-inside">
-                    <li>✨ Demand for AI/ML/Data roles is at all-time high</li>
-                    <li>✨ Start preparing NOW - 6 months is ideal</li>
-                    <li>✨ Focus on depth &gt; breadth</li>
-                    <li>✨ Build real projects that solve problems</li>
-                    <li>✨ Practice, practice, practice (coding + interviews)</li>
-                    <li>✨ Network and learn from others</li>
-                    <li>✨ Rejections are part of the journey</li>
-                  </ul>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg text-center">
-                  <p className="text-green-800 font-bold text-xl">Your dream job is waiting! 🚀</p>
-                </div>
-              </div>
-            </div>
+
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Only watching tutorials without hands-on practice</p>
           </div>
-        )
-      },
-      {
-        title: "Q&A",
-        icon: IconUsers,
-        content: (
-          <div className="slide-content">
-            <div className="slide-inner">
-              <div className="text-7xl mb-4">❓</div>
-              <h2 className="title font-bold text-blue-600">Questions?</h2>
-              <p className="subtitle text-gray-600 mt-2">Let's discuss your concerns and career goals!</p>
-              <div className="mt-6 space-y-3">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="font-semibold text-blue-800">Connect with me for guidance</p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <p className="font-semibold text-green-800">All the best for your placement journey! 🎯</p>
-                </div>
-              </div>
-            </div>
+
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Applying everywhere with one generic resume</p>
           </div>
-        )
-      }
+
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Ignoring communication, soft skills & interview prep</p>
+          </div>
+
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Not practicing mock interviews</p>
+          </div>
+
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Listing tech you never used (ML/AI tools especially)</p>
+          </div>
+
+          {/* NEW 1 */}
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Relying too much on AI tools instead of learning fundamentals</p>
+          </div>
+
+          {/* NEW 2 */}
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Building half-finished projects without deployment/documentation</p>
+          </div>
+
+          {/* NEW 3 */}
+          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm font-semibold text-red-700">❌ Getting discouraged after rejections — they're NORMAL</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+},
+{
+  title: "Action Plan - Start TODAY!",
+  icon: IconRocket,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height">
+
+        <h3 className="title font-bold text-blue-600 mb-4">Your Next Steps 🎯</h3>
+
+        <div className="space-y-3 max-w-3xl mx-auto text-left">
+
+          {/* Week 1 */}
+          <div className="bg-gradient-to-r from-green-400 to-green-500 text-white p-4 rounded-lg">
+            <h4 className="font-bold mb-2">Week 1:</h4>
+            <ul className="text-sm space-y-1">
+              <li>✓ Choose your primary path (DE / DS / ML / AI)</li>
+              <li>✓ Create/clean GitHub & LinkedIn</li>
+              <li>✓ Start LeetCode (5–7 easy problems)</li>
+              <li>✓ Select 1 beginner-friendly project idea</li>
+              <li>✓ Set a fixed daily study schedule</li>
+            </ul>
+          </div>
+
+          {/* Month 1 */}
+          <div className="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-4 rounded-lg">
+            <h4 className="font-bold mb-2">This Month:</h4>
+            <ul className="text-sm space-y-1">
+              <li>✓ Complete 25–30 coding problems (Easy → Medium)</li>
+              <li>✓ Learn one tech deeply (Python / SQL / Pandas / Spark)</li>
+              <li>✓ Build the first version of your project</li>
+              <li>✓ Join 2–3 active tech communities (Discord, LinkedIn groups)</li>
+              <li>✓ Post at least 1 learning update on LinkedIn</li>
+            </ul>
+          </div>
+
+          {/* Continuous */}
+          <div className="bg-gradient-to-r from-purple-400 to-purple-500 text-white p-4 rounded-lg">
+            <h4 className="font-bold mb-2">Continuous Habits:</h4>
+            <ul className="text-sm space-y-1">
+              <li>• Code daily (even 30 minutes is enough)</li>
+              <li>• Study ML/AI/Data concepts weekly</li>
+              <li>• Improve your ongoing project (iterate + deploy)</li>
+              <li>• Read blogs/newsletters (Datacamp, HuggingFace, KDnuggets)</li>
+              <li>• Help others, collaborate, contribute to GitHub</li>
+              <li>• Track progress weekly (DSA, projects, learning)</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+},
+{
+  title: "Remember...",
+  icon: IconUsers,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner max-height text-left">
+
+        <h3 className="title font-bold text-blue-600 mb-4 text-center">You've Got This! 💪</h3>
+
+        <div className="space-y-4 max-w-3xl mx-auto">
+
+          {/* Quote */}
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <p className="text-lg font-semibold text-yellow-800">
+              🌟 “You don’t need to be perfect. You just need to start — and keep moving forward.”
+            </p>
+          </div>
+
+          {/* Key Takeaways */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="font-semibold text-blue-800">Key Takeaways:</p>
+            <ul className="text-sm mt-2 list-disc list-inside space-y-1">
+              <li>✨ AI/ML/Data roles are growing faster than ever</li>
+              <li>✨ Consistency beats talent — 6 focused months is enough</li>
+              <li>✨ Depth matters: master fundamentals, not 20 tools</li>
+              <li>✨ Your portfolio = your strongest weapon</li>
+              <li>✨ Practice coding + interviews regularly</li>
+              <li>✨ Share your work — opportunities come from visibility</li>
+              <li>✨ Rejections are normal — improvement is guaranteed</li>
+            </ul>
+          </div>
+
+          {/* Final Message */}
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <p className="text-green-800 font-bold text-xl">
+              Your future in tech is closer than you think. Keep pushing! 🚀
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+},
+{
+  title: "Q&A",
+  icon: IconUsers,
+  content: (
+    <div className="slide-content">
+      <div className="slide-inner text-center">
+
+        <div className="text-7xl mb-4">❓</div>
+
+        <h2 className="title font-bold text-blue-600">Questions?</h2>
+        <p className="subtitle text-gray-600 mt-2">
+          Feel free to ask anything about careers, skills, projects, or interview prep.
+        </p>
+
+        <div className="mt-6 space-y-3 max-w-xl mx-auto">
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="font-semibold text-blue-800">
+              Connect with me for guidance & mentorship
+            </p>
+          </div>
+
+          <div className="bg-green-50 p-4 rounded-lg">
+            <p className="font-semibold text-green-800">
+              Wishing you all the success in your placement journey! 🎯
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  )
+}
     ];
 
     // Swipe hook for touch
