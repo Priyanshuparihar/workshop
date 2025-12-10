@@ -56,13 +56,18 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
+
+      /* CENTER the card's inner area both ways */
+      justify-content: center; /* vertical centering of child */
+      align-items: center;     /* horizontal centering of child */
     }
 
     @media (max-width: 768px) {
       .slide-card {
         width: calc(100vw - 24px);
         padding: var(--pad-sm);
-        min-height: calc(100vh - 120px);
+        /* reduce min-height for mobile to avoid large empty gap */
+        min-height: 70vh;
         border-radius: 12px;
       }
     }
@@ -71,12 +76,12 @@
     .slide-content {
       display: flex;
       flex-direction: column;
-      justify-content: center; /* strict vertical centering */
+      justify-content: center; /* keeps internal elements grouped in center */
       align-items: center;     /* horizontal centering */
       text-align: center;
       gap: 1rem;
       width: 100%;
-      height: 100%;
+      /* Allow slide-content to size to its contents (don't force 100% height). */
       box-sizing: border-box;
       padding-bottom: 1rem;
     }
@@ -103,7 +108,8 @@
 </head>
 <body class="antialiased">
 
-  <div id="root" class="min-h-screen flex items-start justify-center p-6"></div>
+  <!-- ROOT: vertically center the card inside the viewport -->
+  <div id="root" class="min-h-screen flex items-center justify-center p-6"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
